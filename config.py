@@ -2,7 +2,7 @@
 Description: 
 Author: hecai
 Date: 2021-08-17 14:58:15
-LastEditTime: 2021-08-17 21:23:52
+LastEditTime: 2021-08-17 22:18:52
 FilePath: \checkAi\config.py
 '''
 class Config:
@@ -14,4 +14,7 @@ class Config:
         ]
         self.baidu_ak="EdkfxjTv0pR8IU2q9AdN6Ntg"
         self.baidu_sk="9ohs6PvxnBNMtFkG9jqpTwFTkiBdd42r"
+        self.goods={
+            "youyic_mn_6934665087653":"优益C",
+        }
         

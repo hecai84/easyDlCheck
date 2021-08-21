@@ -2,7 +2,7 @@
 Description: 
 Author: hecai
 Date: 2021-08-17 16:32:13
-LastEditTime: 2021-08-17 22:05:03
+LastEditTime: 2021-08-18 17:33:26
 FilePath: \checkAi\ai.py
 '''
 import requests
@@ -28,16 +28,16 @@ class Ai:
    
                 
        
-    def IdentifyBeanFiliter(self,result):
+    def IdentifyBeanFiliter(self,result,threshold):
         for i in range(1,len(result["results"])):
-            for j in range(0):
+            for j in range(i):
                 beforeRe=result["results"][j]
                 curRe=result["results"][i]
                 if beforeRe["name"]==curRe["name"]:
-                    if self.checkCover(beforeRe["location"],curRe["location"]):
+                    if self.checkCover(beforeRe["location"],curRe["location"],threshold):
                         result["results"][i]["score"]=0
 
-    def checkCover(self,before,after):
+    def checkCover(self,before,after,threshold):
         left=before["left"] if before["left"]>after["left"] else after["left"]
         right=before["left"]+before["width"] if before["left"]+before["width"]<after["left"]+after["width"] else after["left"]+after["width"]
         top=before["top"] if before["top"]>after["top"] else after["top"]
@@ -45,8 +45,7 @@ class Ai:
         if left<right and top<bottom:
             coverArea=(right-left) * (bottom-top)
             beforeArea=before["width"]*before["width"]
-            afterArea=after["width"]*after["width"]
-            if coverArea>beforeArea*0.9 or coverArea>afterArea*0.9:
+            if coverArea>beforeArea*threshold:
                 return True
         return False
 

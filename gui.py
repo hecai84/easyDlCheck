@@ -2,11 +2,11 @@
 Description: 
 Author: hecai
 Date: 2021-08-07 23:08:32
-LastEditTime: 2021-08-17 22:41:45
+LastEditTime: 2021-08-19 14:49:23
 FilePath: \checkAi\gui.py
 '''
 import tkinter as tk
-from tkinter import image_names, messagebox, ttk, filedialog
+from tkinter import messagebox, ttk, filedialog
 import winreg
 import json
 from PIL import Image
@@ -16,12 +16,8 @@ import ai
 import numpy as np
 import config
 
-#from mttkinter import mtTkinter as tk
  
-class HandleMsg:
-    def __init__(self,name="",args={}):
-        self.name = name     # 名称
-        self.args = args     # 参数 
+
  
 class Gui:
     w_box = 480  
@@ -31,25 +27,7 @@ class Gui:
         self.ai=ai.Ai()
         self.picPath=""
         self.conf=config.Config()
-        self.create()
- 
-
-    def loop(self):
-        #读出队列中的信息 
-        if(not self.owner.q.empty()): 
-            msg=self.owner.q.get() 
-            if(msg.name=="SetConfig"):                
-                self.comboApi['value']=msg.args['list']
-                if len(msg.args['list'])>0:
-                    self.comboApi.current(0)
-                else:
-                    self.comboApi.set('')
-            elif msg.name=="insertRecMsg":
-                self.text_Rec.insert('end', msg.args['info']+'\n')
-            elif msg.name=="alarm":
-                self.canvas.create_oval(30, 30, 130, 130, fill='red')
- 
-        self.root.after(100,self.loop)
+        
  
     def loadConfig(self):
         self.comboApi['value']=self.conf.apiList
@@ -59,16 +37,17 @@ class Gui:
             self.comboApi.set('')
 
     def signAiResult(self):
+        self.openPic(self.picPath)
         data = json.loads(self.text_Re.get("0.0","end"))
         goods={}
-        self.ai.IdentifyBeanFiliter(data)
+        self.ai.IdentifyBeanFiliter(data,0.9)
         pixelMatrix=np.ones((960,960))*0
         for bean in data["results"]:
             x1=bean["location"]["left"]/2
             x2=(bean["location"]["left"]+bean["location"]["width"])/2
             y1=bean["location"]["top"]/2
             y2=(bean["location"]["top"]+bean["location"]["height"])/2
-            if self.ai.checkAvailable(pixelMatrix,bean["location"],0.5):
+            if bean["score"]!=0 and self.ai.checkAvailable(pixelMatrix,bean["location"],0.5):
                 name=bean["name"]
                 if name in goods:
                     goods[name]=goods[name]+1
@@ -79,7 +58,7 @@ class Gui:
                 self.canvas.create_rectangle(x1,y1,x2,y2,outline='red')
             
         
-            self.text_count.delete("0.0","end")
+        self.text_count.delete("0.0","end")
         for v,k in goods.items():
             name=v
             if v in self.conf.goods:
@@ -127,13 +106,16 @@ class Gui:
             self.text_Re.delete("0.0","end")            
             self.text_Re.insert("end",result.replace("{\"loca","\n{\"loca"))
             self.signAiResult()
-    
+
     def dragged_files(self,files):
-        if len(files)==1:
-            filename=files[0].decode('gbk')
-            if filename.endswith(".jpg"):
-                self.openPic(filename)
-    
+        try:
+            if len(files)==1:
+                filename=files[0].decode('gbk')
+                if filename.endswith(".jpg"):
+                    self.openPic(filename)
+        except:
+            print("dragged error")
+        
     def create(self):
         
         self.root = tk.Tk()
@@ -152,6 +134,7 @@ class Gui:
         self.bt_Identify.grid(column=3, row=0)
         self.text_th = tk.Entry(self.root,width=6)
         self.text_th.grid(column=4, row=0)
+        self.text_th.insert(0,self.conf.threshold)
         self.bt_Sign = tk.Button(self.root, text="标记", command=self.signAiResult)
         self.bt_Sign.grid(column=5, row=0)
         
@@ -167,7 +150,7 @@ class Gui:
 
         self.loadConfig()
         
-        self.root.after(10, self.loop)
+        #self.root.after(10, self.loop)
         windnd.hook_dropfiles(self.root , func=self.dragged_files)
         self.root.mainloop()
         

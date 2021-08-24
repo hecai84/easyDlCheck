@@ -10,9 +10,14 @@ class Config:
         self.apiList=[
             "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/detection/beverage_whole",
             "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/detection/beverage_whole_2", 
+            "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/detection/obj_detection_test",
             "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/detection/wine_test",           
         ]
         self.threshold="0.6"
+        #同一产品去重
+        self.dedup_th1="0.9"
+        #所有产品去重
+        self.dedup_th2="0.5"
         self.baidu_ak="EdkfxjTv0pR8IU2q9AdN6Ntg"
         self.baidu_sk="9ohs6PvxnBNMtFkG9jqpTwFTkiBdd42r"
         self.goods={

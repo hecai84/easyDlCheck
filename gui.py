@@ -2,7 +2,7 @@
 Description: 
 Author: hecai
 Date: 2021-08-07 23:08:32
-LastEditTime: 2021-08-19 14:49:23
+LastEditTime: 2021-08-24 15:05:47
 FilePath: \checkAi\gui.py
 '''
 import tkinter as tk
@@ -40,14 +40,14 @@ class Gui:
         self.openPic(self.picPath)
         data = json.loads(self.text_Re.get("0.0","end"))
         goods={}
-        self.ai.IdentifyBeanFiliter(data,0.9)
+        self.ai.IdentifyBeanFiliter(data,float(self.conf.dedup_th1))
         pixelMatrix=np.ones((960,960))*0
         for bean in data["results"]:
             x1=bean["location"]["left"]/2
             x2=(bean["location"]["left"]+bean["location"]["width"])/2
             y1=bean["location"]["top"]/2
             y2=(bean["location"]["top"]+bean["location"]["height"])/2
-            if bean["score"]!=0 and self.ai.checkAvailable(pixelMatrix,bean["location"],0.5):
+            if bean["score"]!=0 and self.ai.checkAvailable(pixelMatrix,bean["location"],float(self.conf.dedup_th2)):
                 name=bean["name"]
                 if name in goods:
                     goods[name]=goods[name]+1

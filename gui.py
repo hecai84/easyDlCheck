@@ -2,11 +2,12 @@
 Description: 
 Author: hecai
 Date: 2021-08-07 23:08:32
-LastEditTime: 2021-08-24 15:05:47
+LastEditTime: 2021-08-25 15:08:45
 FilePath: \checkAi\gui.py
 '''
 import tkinter as tk
-from tkinter import messagebox, ttk, filedialog
+from tkinter import messagebox, ttk, filedialog,Frame
+from tkinter.constants import N
 import winreg
 import json
 from PIL import Image
@@ -43,10 +44,10 @@ class Gui:
         self.ai.IdentifyBeanFiliter(data,float(self.conf.dedup_th1))
         pixelMatrix=np.ones((960,960))*0
         for bean in data["results"]:
-            x1=bean["location"]["left"]/2
-            x2=(bean["location"]["left"]+bean["location"]["width"])/2
-            y1=bean["location"]["top"]/2
-            y2=(bean["location"]["top"]+bean["location"]["height"])/2
+            x1=bean["location"]["left"]
+            x2=(bean["location"]["left"]+bean["location"]["width"])
+            y1=bean["location"]["top"]
+            y2=(bean["location"]["top"]+bean["location"]["height"])
             if bean["score"]!=0 and self.ai.checkAvailable(pixelMatrix,bean["location"],float(self.conf.dedup_th2)):
                 name=bean["name"]
                 if name in goods:
@@ -84,8 +85,8 @@ class Gui:
         global im
         print(file_path)
         image = Image.open(file_path)  
-        w,h=image.size
-        image = self.resize(w, h, self.w_box, self.h_box, image) 
+        #w,h=image.size
+        #image = self.resize(w, h, self.w_box, self.h_box, image) 
         im = ImageTk.PhotoImage(image)  
         self.canvas.create_image(0,0,anchor='nw',image = im)  
         self.picPath=file_path
@@ -119,34 +120,41 @@ class Gui:
     def create(self):
         
         self.root = tk.Tk()
-
-        self.root.geometry('880x520')  # 这里的乘是小x
+        self.root.title("easyDL校验")
+        self.root.geometry('1360x1005')  # 这里的乘是小x
  
-        labelPort = tk.Label(self.root,text = "API:")
-        labelPort.grid(column=0, row=0,padx=5, pady=5)
+        fm1=Frame(self.root)
+        fm1.grid(row=0, column=0, sticky='n') 
+        fm2=Frame(self.root)
+        fm2.grid(row=0, column=1, sticky='n') 
+        fmbt=Frame(fm2)
+        fmbt.grid(row=0, column=0, sticky='w',pady=5) 
 
-        self.comboApi = ttk.Combobox(self.root,state="readonly",width=60)
-        self.comboApi.grid(column=1, row=0, padx=5)
+        labelPort = tk.Label(fm1,text = "API:")
+        labelPort.grid(column=0, row=0,pady=7)
 
-        self.bt_OpenPic = tk.Button(self.root, text="打开图片", command=self.openPicDialog)
-        self.bt_OpenPic.grid(column=2, row=0)
-        self.bt_Identify = tk.Button(self.root, text="识别", command=self.Identify)
-        self.bt_Identify.grid(column=3, row=0)
-        self.text_th = tk.Entry(self.root,width=6)
-        self.text_th.grid(column=4, row=0)
+        self.comboApi = ttk.Combobox(fm1,state="readonly",width=120)
+        self.comboApi.grid(column=1, row=0)
+
+        self.canvas = tk.Canvas(fm1, bg='white', height=960, width=960)
+        self.canvas.grid(column=0, row=1,columnspan=2)
+
+        self.bt_OpenPic = tk.Button(fmbt, text="打开图片", command=self.openPicDialog)
+        self.bt_OpenPic.pack(side=tk.LEFT,padx=3)
+        self.bt_Identify = tk.Button(fmbt, text="识别", command=self.Identify)
+        self.bt_Identify.pack(side=tk.LEFT,padx=3)
+        self.text_th = tk.Entry(fmbt,width=10)
+        self.text_th.pack(side=tk.LEFT,padx=3)
         self.text_th.insert(0,self.conf.threshold)
-        self.bt_Sign = tk.Button(self.root, text="标记", command=self.signAiResult)
-        self.bt_Sign.grid(column=5, row=0)
+        self.bt_Sign = tk.Button(fmbt, text="标记", command=self.signAiResult)
+        self.bt_Sign.pack(side=tk.LEFT,padx=3)
         
-
-        self.canvas = tk.Canvas(self.root, bg='white', height=480, width=500)
-        self.canvas.grid(column=0, row=2,columnspan=2,rowspan=2)
         
-        self.text_Re = tk.Text(self.root,width=50, height=27)
-        self.text_Re.grid(column=2, row=2,columnspan=4)
+        self.text_Re = tk.Text(fm2,width=55, height=50)
+        self.text_Re.grid(row=1, column=0) 
         
-        self.text_count = tk.Text(self.root,width=50, height=10)
-        self.text_count.grid(column=2, row=3,columnspan=4)
+        self.text_count = tk.Text(fm2,width=55, height=23)
+        self.text_count.grid(row=2, column=0) 
 
         self.loadConfig()
         

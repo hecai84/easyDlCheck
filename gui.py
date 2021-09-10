@@ -2,9 +2,10 @@
 Description: 
 Author: hecai
 Date: 2021-08-07 23:08:32
-LastEditTime: 2021-08-25 15:08:45
+LastEditTime: 2021-09-10 17:03:17
 FilePath: \checkAi\gui.py
 '''
+from ctypes import sizeof
 import tkinter as tk
 from tkinter import messagebox, ttk, filedialog,Frame
 from tkinter.constants import N
@@ -28,6 +29,7 @@ class Gui:
         self.ai=ai.Ai()
         self.picPath=""
         self.conf=config.Config()
+        self.conf.LoadGoods()
         
  
     def loadConfig(self):
@@ -41,6 +43,7 @@ class Gui:
         self.openPic(self.picPath)
         data = json.loads(self.text_Re.get("0.0","end"))
         goods={}
+        goodsIndex={}
         self.ai.IdentifyBeanFiliter(data,float(self.conf.dedup_th1))
         pixelMatrix=np.ones((960,960))*0
         for bean in data["results"]:
@@ -54,17 +57,21 @@ class Gui:
                     goods[name]=goods[name]+1
                 else:
                     goods[name]=1
-                self.canvas.create_rectangle(x1,y1,x2,y2,outline='blue')
+                    goodsIndex[name]=len(goods)
+                self.canvas.create_rectangle(x1,y1,x2,y2,outline='blue',width=2)
+                self.canvas.create_text(x1+15,y1+15,text = str(goodsIndex[name]),font=("Purisa", 30),fill = 'blue')
             else:
-                self.canvas.create_rectangle(x1,y1,x2,y2,outline='red')
+                self.canvas.create_rectangle(x1,y1,x2,y2,outline='red',width=2)
+                self.canvas.create_text(x1+15,y1+15,text = str(goodsIndex[name]),font=("Purisa", 30),fill = 'red')
             
-        
+        goodsList = sorted(goodsIndex.items(), key=lambda d:d[1])
         self.text_count.delete("0.0","end")
-        for v,k in goods.items():
-            name=v
-            if v in self.conf.goods:
-                name=self.conf.goods[v]
-            self.text_count.insert("end",name+":"+str(k)+"\n")
+        for item in goodsList:
+            name=item[0]
+            count=goods[name]
+            if name in self.conf.goods:
+                name=self.conf.goods[name]
+            self.text_count.insert("end",str(item[1])+"."+name+":"+str(count)+"\n")
 
     def resize(self,w, h, w_box, h_box, pil_image):  
         f1 = 1.0*w_box/w # 1.0 forces float division in Python2  
@@ -117,11 +124,11 @@ class Gui:
         except:
             print("dragged error")
         
-    def create(self):
-        
+    def create(self):        
         self.root = tk.Tk()
         self.root.title("easyDL校验")
         self.root.geometry('1360x1005')  # 这里的乘是小x
+        self.root.resizable(0,0)
  
         fm1=Frame(self.root)
         fm1.grid(row=0, column=0, sticky='n') 
@@ -133,7 +140,7 @@ class Gui:
         labelPort = tk.Label(fm1,text = "API:")
         labelPort.grid(column=0, row=0,pady=7)
 
-        self.comboApi = ttk.Combobox(fm1,state="readonly",width=120)
+        self.comboApi = ttk.Combobox(fm1,state="readonly",width=130)
         self.comboApi.grid(column=1, row=0)
 
         self.canvas = tk.Canvas(fm1, bg='white', height=960, width=960)
@@ -159,7 +166,7 @@ class Gui:
         self.loadConfig()
         
         #self.root.after(10, self.loop)
-        windnd.hook_dropfiles(self.root , func=self.dragged_files)
+        windnd.hook_dropfiles(self.canvas , func=self.dragged_files)
         self.root.mainloop()
         
  

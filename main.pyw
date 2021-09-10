@@ -2,7 +2,7 @@
 Description: 
 Author: hecai
 Date: 2021-08-07 12:50:27
-LastEditTime: 2021-08-19 16:24:58
+LastEditTime: 2021-09-10 16:46:35
 FilePath: \checkAi\main.pyw
 '''
 from time import sleep

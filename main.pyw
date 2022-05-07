@@ -2,16 +2,20 @@
 Description: 
 Author: hecai
 Date: 2021-08-07 12:50:27
-LastEditTime: 2021-09-10 16:46:35
-FilePath: \checkAi\main.pyw
+LastEditTime: 2022-05-07 10:43:26
+FilePath: \checkAi\main.py
 '''
 from time import sleep
 import gui
 from multiprocessing import Process,Queue
 import threading
 import config
+import os
 #pip freeze > requirements.txt
-#pip install -r requirements.txt
+#pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
+
+#将工作目录设置成当前脚本所在的目录
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 class MainProc:
     def __init__(self):

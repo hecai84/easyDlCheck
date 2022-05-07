@@ -2,7 +2,7 @@
 Description: 
 Author: hecai
 Date: 2021-08-07 23:08:32
-LastEditTime: 2021-09-10 17:03:17
+LastEditTime: 2022-05-07 10:44:10
 FilePath: \checkAi\gui.py
 '''
 from ctypes import sizeof
@@ -17,6 +17,7 @@ import windnd
 import ai
 import numpy as np
 import config
+import time
 
  
 
@@ -110,10 +111,13 @@ class Gui:
 
     def Identify(self):
         if self.picPath!="":
+            t1=time.time()*1000
             result=self.ai.Identify(self.picPath,self.comboApi.get(),self.text_th.get())
+            t2=time.time()*1000
             self.text_Re.delete("0.0","end")            
             self.text_Re.insert("end",result.replace("{\"loca","\n{\"loca"))
             self.signAiResult()
+            self.text_count.insert("end","耗时:"+str(int(t2-t1))+"ms")
 
     def dragged_files(self,files):
         try:

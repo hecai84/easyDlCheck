@@ -2,7 +2,7 @@
 Description: 
 Author: hecai
 Date: 2021-08-17 14:58:15
-LastEditTime: 2021-09-10 16:26:50
+LastEditTime: 2022-03-10 18:15:38
 FilePath: \checkAi\config.py
 '''
 import pandas as pd
@@ -15,7 +15,9 @@ class Config:
             "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/detection/obj_detection_test",
             "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/detection/wine_test",     
             "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/detection/obj_detection",
-            "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/detection/obj_detection_test"            
+            "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/detection/obj_detection_test",
+            "http://192.168.132.88:24401/",
+            "http://192.168.132.88:24402/"
         ]
         self.threshold="0.6"
         #同一产品去重

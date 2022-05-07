@@ -2,7 +2,7 @@
 Description: 
 Author: hecai
 Date: 2021-08-17 16:32:13
-LastEditTime: 2021-08-18 17:33:26
+LastEditTime: 2022-03-08 10:49:54
 FilePath: \checkAi\ai.py
 '''
 import requests
@@ -66,13 +66,20 @@ class Ai:
             return base64_data
 
     def Identify(self,filepath,url,threshold):
-        param={}
-        param["image"]=self.base64Img(filepath)
-        if threshold!="":
-            param["threshold"]=threshold
-        content=json.dumps(param)
-        r=requests.post(url+"?access_token=" + self.token, data=content)
-        if r.status_code == 200:
-            print(r.text)
-            return r.text
+        if url.find('192.168') != -1:
+            with open(filepath, 'rb') as f:
+                img = f.read()
+            r = requests.post(url, params={'threshold': 0.1},data=img).json()
+            print(r)
+            return json.dumps(r)
+        else:
+            param={}
+            param["image"]=self.base64Img(filepath)
+            if threshold!="":
+                param["threshold"]=threshold
+            content=json.dumps(param)
+            r=requests.post(url+"?access_token=" + self.token, data=content)
+            if r.status_code == 200:
+                print(r.text)
+                return r.text
 
